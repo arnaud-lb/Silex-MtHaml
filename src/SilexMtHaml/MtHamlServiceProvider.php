@@ -6,6 +6,7 @@ use Silex\ServiceProviderInterface;
 use SilexMtHaml\Lexer;
 use Silex\Application;
 use MtHaml\Environment;
+use MtHaml\Support\Twig\Extension;
 
 class MtHamlServiceProvider implements ServiceProviderInterface
 {
@@ -17,7 +18,12 @@ class MtHamlServiceProvider implements ServiceProviderInterface
             ));
         });
 
+        $app['mthaml.twig.extension'] = $app->share(function ($app) {
+            return new Extension();
+        });
+
         $app['twig'] = $app->share($app->extend('twig', function ($twig, $app) {
+            $twig->addExtension($app['mthaml.twig.extension']);
             $lexer = new Lexer($app['mthaml'], $twig->getLexer());
             $twig->setLexer($lexer);
             return $twig;
