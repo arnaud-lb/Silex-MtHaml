@@ -1,0 +1,19 @@
+{
+    "name": "mthaml/silex-mthaml",
+    "description": "HAML templating for Silex",
+    "require": {
+        "mthaml/mthaml": "1.*"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Arnaud Le Blanc",
+            "email": "arnaud.lb@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "SilexMtHaml": "src/"
+        }
+    }
+}
