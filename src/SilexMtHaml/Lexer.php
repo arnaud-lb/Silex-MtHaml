@@ -19,8 +19,9 @@ class Lexer implements \Twig_LexerInterface
     public function tokenize($code, $filename = null)
     {
         if ($code instanceof Twig_Source) {
-            if ($filename === null)
+            if ($filename === null) {
                 $filename = $code->getName();
+            }
             $code = $code->getCode();
         }
         
