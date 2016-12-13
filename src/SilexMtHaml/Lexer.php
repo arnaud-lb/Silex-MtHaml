@@ -3,6 +3,7 @@
 namespace SilexMtHaml;
 
 use MtHaml\Environment;
+use \Twig_Source;
 
 class Lexer implements \Twig_LexerInterface
 {
@@ -17,10 +18,31 @@ class Lexer implements \Twig_LexerInterface
 
     public function tokenize($code, $filename = null)
     {
-        if (null !== $filename && preg_match('/\.haml$/', $filename)) {
-            $code = $this->environment->compileString($code, $filename);
+        if ($source instanceof Twig_Source) {
+            $code = $source->getCode();
+            if ($filename === null) {
+                $filename = $source->getName();
+            }
+            $path = $source->getPath();
+    
+            if (null !== $filename && (preg_match('/\.haml$/', $filename))) {
+                $code = $this->environment->compileString($code, $filename);
+            }
+            
+            $new_source = new Twig_Source($code, $filename, $path);
+            
+            return $this->lexer->tokenize($new_source);
         }
-        return $this->lexer->tokenize($code, $filename);
+        else {
+            $code = $source;
+            
+            if (null !== $filename && (preg_match('/\.haml$/', $filename))) {
+                $code = $this->environment->compileString($code, $filename);
+            }
+
+            return $this->lexer->tokenize($code, $filename);
+        }
     }
+
 }
 
