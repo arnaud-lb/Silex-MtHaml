@@ -18,17 +18,31 @@ class Lexer implements \Twig_LexerInterface
 
     public function tokenize($code, $filename = null)
     {
-        if ($code instanceof Twig_Source) {
+        if ($source instanceof Twig_Source) {
+            $code = $source->getCode();
             if ($filename === null) {
-                $filename = $code->getName();
+                $filename = $source->getName();
             }
-            $code = $code->getCode();
+            $path = $source->getPath();
+    
+            if (null !== $filename && (preg_match('/\.haml$/', $filename))) {
+                $code = $this->environment->compileString($code, $filename);
+            }
+            
+            $new_source = new Twig_Source($code, $filename, $path);
+            
+            return $this->lexer->tokenize($new_source);
         }
-        
-        if (null !== $filename && preg_match('/\.haml$/', $filename)) {
-            $code = $this->environment->compileString($code, $filename);
+        else {
+            $code = $source;
+            
+            if (null !== $filename && (preg_match('/\.haml$/', $filename))) {
+                $code = $this->environment->compileString($code, $filename);
+            }
+
+            return $this->lexer->tokenize($code, $filename);
         }
-        return $this->lexer->tokenize($code, $filename);
     }
+
 }
 
